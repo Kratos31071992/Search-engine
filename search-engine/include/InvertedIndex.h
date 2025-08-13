@@ -1,18 +1,16 @@
-#ifndef INVERTEDINDEX_H
+ifndef INVERTEDINDEX_H
 #define INVERTEDINDEX_H
 
-#include <string>
 #include <vector>
+#include <string>
 #include <map>
 #include <mutex>
-#include <thread>
-#include <algorithm>
-#include <stdexcept>
 
 struct Entry {
     size_t doc_id;
     size_t count;
 
+    // Для тестирования и сравнения
     bool operator==(const Entry& other) const {
         return (doc_id == other.doc_id && count == other.count);
     }
@@ -23,19 +21,25 @@ public:
     InvertedIndex() = default;
 
     /**
-     * @brief Обновляет базу документов с обработкой исключений
-     * @throws std::runtime_error если входные данные пусты
+     * Обновляет или заполняет базу документов для поиска
+     * @param input_docs Содержимое документов
+     * @throws std::runtime_error При пустом входном списке
      */
     void UpdateDocumentBase(std::vector<std::string> input_docs);
 
+    /**
+     * Возвращает количество вхождений слова в документах
+     * @param word Искомое слово
+     * @return Вектор пар {doc_id, count}
+     */
     std::vector<Entry> GetWordCount(const std::string& word) const;
 
 private:
-    std::vector<std::string> docs;
-    mutable std::mutex dict_mutex;
-    std::map<std::string, std::vector<Entry>> freq_dictionary;
+    void indexDocument(size_t doc_id, const std::string& content);
 
-    void indexDocument(size_t doc_id, const std::string& doc_content);
+    std::vector<std::string> docs; // Хранилище документов
+    std::map<std::string, std::vector<Entry>> freq_dict; // Частотный словарь
+    mutable std::mutex dict_mutex; // Для потокобезопасности
 };
 
 #endif // INVERTEDINDEX_H
