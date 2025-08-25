@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../include/inverted_index.h"
+#include "inverted_index.h"
 
 void TestInvertedIndexFunctionality(
 const std::vector<std::string>& docs,
