@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "../include/search_server.h"
+#include "search_server.h"
 
 TEST(TestCaseSearchServer, TestSimple) {
     const std::vector<std::string> docs = {
