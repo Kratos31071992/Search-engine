@@ -13,12 +13,14 @@ struct RelativeIndex {
 
 class SearchServer {
 public:
-    SearchServer(InvertedIndex& idx) : index(idx) { };
+    explicit SearchServer(InvertedIndex& idx, size_t responses_limit = 5)
+        : index(idx), responses_limit(responses_limit) { };
 
     std::vector<std::vector<RelativeIndex>> search(const std::vector<std::string>& queries_input);
 
 private:
     InvertedIndex index;
+    size_t responses_limit;
 };
 
 #endif // SEARCH_SERVER_H

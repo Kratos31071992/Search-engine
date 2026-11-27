@@ -2,13 +2,15 @@
 #include "inverted_index.h"
 #include "search_server.h"
 
+#include <iostream>
+
 int main() {
     try {
         ConverterJSON conv;
         auto docs = conv.GetTextDocuments();
         InvertedIndex idx;
         idx.UpdateDocumentBase(docs);
-        SearchServer srv(idx);
+        SearchServer srv(idx, conv.GetResponsesLimit());
         auto requests = conv.GetRequests();
         auto results = srv.search(requests);
         int limit = conv.GetResponsesLimit();

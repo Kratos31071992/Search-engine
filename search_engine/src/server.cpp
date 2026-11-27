@@ -32,30 +32,17 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             return freq_a < freq_b;
         });
 
-        // Найти документы, содержащие все слова (AND семантика)
-        std::map<size_t, size_t> doc_counts;
-        std::vector<size_t> candidate_docs;
+        // Собрать документы, содержащие хотя бы одно слово запроса.
+        // Итоговое место документа определяется суммарной частотой всех слов.
+        std::set<size_t> candidate_doc_ids;
         for (const auto& word : words) {
-            auto counts = index.GetWordCount(word);
-            if (counts.empty()) {
-                candidate_docs.clear();
-                break;
-            }
-            if (candidate_docs.empty()) {
-                for (const auto& entry : counts) {
-                    candidate_docs.push_back(entry.doc_id);
-                }
-            } else {
-                std::vector<size_t> new_candidates;
-                for (const auto& doc : candidate_docs) {
-                    if (std::any_of(counts.begin(), counts.end(), [doc](const Entry& e) { return e.doc_id == doc; })) {
-                        new_candidates.push_back(doc);
-                    }
-                }
-                candidate_docs = new_candidates;
-                if (candidate_docs.empty()) break;
+            for (const auto& entry : index.GetWordCount(word)) {
+                candidate_doc_ids.insert(entry.doc_id);
             }
         }
+        std::vector<size_t> candidate_docs(
+            candidate_doc_ids.begin(), candidate_doc_ids.end()
+        );
 
         if (candidate_docs.empty()) {
             results.push_back({});
@@ -89,7 +76,9 @@ std::vector<std::vector<RelativeIndex>> SearchServer::search(const std::vector<s
             return a.doc_id < b.doc_id;
         });
 
-        // Ограничение max_responses (5 по умолчанию, но в main ограничиваем)
+        if (rels.size() > responses_limit) {
+            rels.resize(responses_limit);
+        }
         results.push_back(rels);
     }
 

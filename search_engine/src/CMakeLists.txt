@@ -9,6 +9,7 @@ FetchContent_MakeAvailable(json)
 
 configure_file(${CMAKE_SOURCE_DIR}/config/config.json ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
 configure_file(${CMAKE_SOURCE_DIR}/config/requests.json ${CMAKE_CURRENT_BINARY_DIR} COPYONLY)
+file(COPY ${CMAKE_SOURCE_DIR}/resource DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 
 add_executable(search_engine main.cpp converter.cpp inverted_index.cpp server.cpp)
 
